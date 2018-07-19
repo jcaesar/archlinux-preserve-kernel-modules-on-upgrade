@@ -1,0 +1,12 @@
+[Trigger]
+Type = Package
+Operation = Upgrade
+# Uuuh…
+Operation = Remove
+Target = linux
+
+[Action]
+Description = Preserve current kernel's modules: Link preserved modules in /tmp
+When = PostTransaction
+Exec = /usr/local/sbin/preservemods post
+NeedsTargets = true

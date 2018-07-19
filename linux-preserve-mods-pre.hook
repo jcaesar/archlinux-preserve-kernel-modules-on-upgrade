@@ -1,0 +1,12 @@
+[Trigger]
+Type = Package
+Operation = Upgrade
+# Uuuh…
+Operation = Remove
+Target = linux
+
+[Action]
+Description = Preserve current kernel's modules: Copy to /tmp directory
+When = PreTransaction
+Exec = /usr/local/sbin/preservemods pre
+NeedsTargets = true

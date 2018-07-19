@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# you know what would be really cute? Using btrfs checkpoints for this. But I don't want to manage those, so /tmp is quite fine for now.
+
+# TODO: extramodules
+
+set -euo pipefail
+
+DEFAULTS=/etc/default/preserve-kernel-mods
+
+MODDIR="/usr/lib/modules"
+[ -e $DEFAULTS ] && . $DEFAULTS
+CURRENT_MODS="$MODDIR/$(uname -r)"
+BACKUP_MODS="/tmp/kernel-modules"
+[ -e $DEFAULTS ] && . $DEFAULTS
+
+case ${1:-help} in
+pre)
+	if [ -d "$CURRENT_MODS" ]; then
+		echo "Preserving current modules"
+		rm -rf "$BACKUP_MODS"
+		mkdir -p "$BACKUP_MODS"
+		cp -ar "$CURRENT_MODS" "$BACKUP_MODS"
+	fi
+	;;
+post)
+	if [ -d "$BACKUP_MODS/$(uname -r)" ] && ! [ -d "$CURRENT_MODS" ]; then
+		echo "Restoring availability of current mods"
+		ln -sf "$BACKUP_MODS/$(uname -r)" "$CURRENT_MODS"
+	fi
+	echo "Cleaned up old, broken symlinks: $(find "$MODDIR" -maxdepth 1  -type l ! -exec test -e '{}' \; -delete -print)"
+	;;
+*)
+	echo "This script is intended to be run from pacman's pre/post transaction hooks when updating linux and should preserve the kernel modules for the current kernel."
+	exit -1
+	;;
+esac
