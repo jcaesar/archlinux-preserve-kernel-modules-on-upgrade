@@ -16,15 +16,16 @@ BACKUP_MODS="/tmp/kernel-modules"
 
 case ${1:-help} in
 pre)
-	if [ -d "$CURRENT_MODS" ]; then
+	if test -d "$CURRENT_MODS" && ! test -L "$CURRENT_MODS"; then
 		echo "Preserving current modules"
 		rm -rf "$BACKUP_MODS"
 		mkdir -p "$BACKUP_MODS"
 		cp -ar "$CURRENT_MODS" "$BACKUP_MODS"
+		echo cp -ar "$CURRENT_MODS" "$BACKUP_MODS"
 	fi
 	;;
 post)
-	if [ -d "$BACKUP_MODS/$(uname -r)" ] && ! [ -d "$CURRENT_MODS" ]; then
+	if test -d "$BACKUP_MODS/$(uname -r)" test && ! test -d "$CURRENT_MODS" ; then
 		echo "Restoring availability of current mods"
 		ln -sf "$BACKUP_MODS/$(uname -r)" "$CURRENT_MODS"
 	fi
@@ -35,3 +36,4 @@ post)
 	exit -1
 	;;
 esac
+
