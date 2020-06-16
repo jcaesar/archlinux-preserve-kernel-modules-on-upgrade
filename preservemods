@@ -25,7 +25,7 @@ pre)
 	fi
 	;;
 post)
-	if test -d "$BACKUP_MODS/$(uname -r)" test && ! test -d "$CURRENT_MODS" ; then
+	if test -d "$BACKUP_MODS/$(uname -r)" && ! test -d "$CURRENT_MODS" ; then
 		echo "Restoring availability of current mods"
 		ln -sf "$BACKUP_MODS/$(uname -r)" "$CURRENT_MODS"
 	fi
